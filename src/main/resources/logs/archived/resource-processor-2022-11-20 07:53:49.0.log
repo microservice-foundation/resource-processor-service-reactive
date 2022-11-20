@@ -1,0 +1,5 @@
+2022-11-20 07:53:49 [main] INFO  : Starting ResourceProcessorApplication using Java 11.0.16 on EPUZTASW007D with PID 10040 (/Users/Yusuf_Murodov/Local/epam/traning/microservices/resource-processor/build/classes/java/main started by Yusuf_Murodov in /Users/Yusuf_Murodov/Local/epam/traning/microservices/resource-processor)
+2022-11-20 07:53:49 [main] DEBUG : Running with Spring Boot v2.7.4, Spring v5.3.23
+2022-11-20 07:53:49 [main] INFO  : No active profile set, falling back to 1 default profile: "default"
+2022-11-20 07:53:49 [main] DEBUG : Loading source class com.epam.training.microservicefoundation.resourceprocessor.ResourceProcessorApplication
+2022-11-20 07:53:49 [main] DEBUG : Refreshing org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac

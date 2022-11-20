@@ -1,0 +1,261 @@
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'songServiceClient'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'resourceProcessorService' via constructor to bean named 'resourceRecordValidator'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'resourceProcessorService' via constructor to bean named 'resourceServiceClient'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'resourceProcessorService' via constructor to bean named 'songServiceClient'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'kafkaManager' via constructor to bean named 'resourceProcessorService'
+2022-11-20 08:12:46 [main] DEBUG : No retry topic configuration found for topics [resources]
+2022-11-20 08:12:46 [main] DEBUG : 1 @KafkaListener methods processed on bean 'kafkaManager': {public void com.epam.training.microservicefoundation.resourceprocessor.service.KafkaManager.listen(com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceRecord,org.springframework.kafka.support.Acknowledgment)=[@org.springframework.kafka.annotation.KafkaListener(topicPattern="", beanRef="__listener", containerFactory="", contentTypeConverter="", topics={"resources"}, groupId="", batch="", topicPartitions={}, clientIdPrefix="", splitIterables=true, concurrency="", autoStartup="", filter="", idIsGroup=true, containerGroup="", errorHandler="", id="", properties={}, info="")]}
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'deserializer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaListenerContainerFactory'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.kafka.config.internalKafkaListenerEndpointRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.AutoConfigurationPackages'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar.methodValidationExcludeFilter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration$Jackson2ObjectMapperBuilderCustomizerConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'standardJacksonObjectMapperBuilderCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.jackson-org.springframework.boot.autoconfigure.jackson.JacksonProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'standardJacksonObjectMapperBuilderCustomizer' via factory method to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'standardJacksonObjectMapperBuilderCustomizer' via factory method to bean named 'spring.jackson-org.springframework.boot.autoconfigure.jackson.JacksonProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration$JacksonObjectMapperBuilderConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration$ParameterNamesModuleConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'parameterNamesModule'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration$JacksonObjectMapperConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'jacksonObjectMapper'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'jacksonObjectMapperBuilder' via factory method to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'jacksonObjectMapperBuilder' via factory method to bean named 'standardJacksonObjectMapperBuilderCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'jsonComponentModule'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'jsonMixinModule'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'jsonMixinModule' via factory method to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : @EnableAutoConfiguration was declared on a class in the package 'com.epam.training.microservicefoundation.resourceprocessor'. Automatic @Repository and @Entity scanning is enabled.
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'jacksonObjectMapper' via factory method to bean named 'jacksonObjectMapperBuilder'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration$DefaultCodecsConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'defaultCodecCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.codec-org.springframework.boot.autoconfigure.codec.CodecProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'defaultCodecCustomizer' via factory method to bean named 'spring.codec-org.springframework.boot.autoconfigure.codec.CodecProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration$JacksonCodecConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'jacksonCodecCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'jacksonCodecCustomizer' via factory method to bean named 'jacksonObjectMapper'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'defaultPartHttpMessageReaderCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.webflux.multipart-org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'defaultPartHttpMessageReaderCustomizer' via factory method to bean named 'spring.webflux.multipart-org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.webflux-org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration' via constructor to bean named 'server-org.springframework.boot.autoconfigure.web.ServerProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration' via constructor to bean named 'spring.webflux-org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webSessionIdResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration' via constructor to bean named 'server-org.springframework.boot.autoconfigure.web.ServerProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'errorWebExceptionHandler'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'errorAttributes'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.web-org.springframework.boot.autoconfigure.web.WebProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration' via constructor to bean named 'spring.webflux-org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration' via constructor to bean named 'spring.web-org.springframework.boot.autoconfigure.web.WebProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration' via constructor to bean named 'server-org.springframework.boot.autoconfigure.web.ServerProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$WebFluxConfig'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$WebFluxConfig' via constructor to bean named 'spring.web-org.springframework.boot.autoconfigure.web.WebProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$WebFluxConfig' via constructor to bean named 'spring.webflux-org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$WebFluxConfig' via constructor to bean named 'org.springframework.beans.factory.support.DefaultListableBeanFactory@1d1f7216'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'errorWebExceptionHandler' via factory method to bean named 'errorAttributes'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'errorWebExceptionHandler' via factory method to bean named 'spring.web-org.springframework.boot.autoconfigure.web.WebProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'errorWebExceptionHandler' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'errorWebExceptionHandler' via factory method to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webFluxConversionService'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webFluxValidator'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'localeContextResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webSessionManager'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webHandler'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'requestMappingHandlerMapping'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webFluxContentTypeResolver'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'requestMappingHandlerMapping' via factory method to bean named 'webFluxContentTypeResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'routerFunctionMapping'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'routerFunctionMapping' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'resourceHandlerMapping'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'resourceUrlProvider'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'resourceHandlerMapping' via factory method to bean named 'resourceUrlProvider'
+2022-11-20 08:12:46 [main] DEBUG : 'resourceHandlerMapping' {/webjars/**=ResourceWebHandler [classpath [META-INF/resources/webjars/]], /**=ResourceWebHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/]]}
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'welcomePageRouterFunctionMapping'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$WelcomePageConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'welcomePageRouterFunctionMapping' via factory method to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'welcomePageRouterFunctionMapping' via factory method to bean named 'spring.webflux-org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'welcomePageRouterFunctionMapping' via factory method to bean named 'spring.web-org.springframework.boot.autoconfigure.web.WebProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'requestMappingHandlerAdapter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webFluxAdapterRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'requestMappingHandlerAdapter' via factory method to bean named 'webFluxAdapterRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'requestMappingHandlerAdapter' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'requestMappingHandlerAdapter' via factory method to bean named 'webFluxConversionService'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'requestMappingHandlerAdapter' via factory method to bean named 'webFluxValidator'
+2022-11-20 08:12:46 [main] DEBUG : ControllerAdvice beans: none
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'handlerFunctionAdapter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'simpleHandlerAdapter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'webFluxWebSocketHandlerAdapter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'responseEntityResultHandler'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseEntityResultHandler' via factory method to bean named 'webFluxAdapterRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseEntityResultHandler' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseEntityResultHandler' via factory method to bean named 'webFluxContentTypeResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'responseBodyResultHandler'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseBodyResultHandler' via factory method to bean named 'webFluxAdapterRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseBodyResultHandler' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'responseBodyResultHandler' via factory method to bean named 'webFluxContentTypeResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'viewResolutionResultHandler'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'viewResolutionResultHandler' via factory method to bean named 'webFluxAdapterRegistry'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'viewResolutionResultHandler' via factory method to bean named 'webFluxContentTypeResolver'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'serverResponseResultHandler'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'serverResponseResultHandler' via factory method to bean named 'serverCodecConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'responseStatusExceptionHandler'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration$AnnotationConfig'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration$AnnotationConfig' via constructor to bean named 'org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext@4097cac'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'httpHandler'
+2022-11-20 08:12:46 [main] DEBUG : enableLoggingRequestDetails='false': form data and headers will be masked to prevent unsafe logging of potentially sensitive data
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.aop.AopAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'applicationAvailability'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'lifecycleProcessor'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.lifecycle-org.springframework.boot.autoconfigure.context.LifecycleProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'lifecycleProcessor' via factory method to bean named 'spring.lifecycle-org.springframework.boot.autoconfigure.context.LifecycleProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration' via constructor to bean named 'spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.kafka.KafkaAnnotationDrivenConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.kafka-org.springframework.boot.autoconfigure.kafka.KafkaProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.kafka.KafkaAnnotationDrivenConfiguration' via constructor to bean named 'spring.kafka-org.springframework.boot.autoconfigure.kafka.KafkaProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaTemplate'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration' via constructor to bean named 'spring.kafka-org.springframework.boot.autoconfigure.kafka.KafkaProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaProducerFactory'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaProducerListener'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'kafkaTemplate' via factory method to bean named 'kafkaProducerFactory'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'kafkaTemplate' via factory method to bean named 'kafkaProducerListener'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaListenerContainerFactoryConfigurer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaConsumerFactory'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'kafkaAdmin'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.netty-org.springframework.boot.autoconfigure.netty.NettyProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'org.springframework.boot.autoconfigure.netty.NettyAutoConfiguration' via constructor to bean named 'spring.netty-org.springframework.boot.autoconfigure.netty.NettyProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.sql.init-org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'taskExecutorBuilder'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.task.execution-org.springframework.boot.autoconfigure.task.TaskExecutionProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'taskExecutorBuilder' via factory method to bean named 'spring.task.execution-org.springframework.boot.autoconfigure.task.TaskExecutionProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'scheduledBeanLazyInitializationExcludeFilter'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'taskSchedulerBuilder'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.task.scheduling-org.springframework.boot.autoconfigure.task.TaskSchedulingProperties'
+2022-11-20 08:12:46 [main] DEBUG : Autowiring by type from bean name 'taskSchedulerBuilder' via factory method to bean named 'spring.task.scheduling-org.springframework.boot.autoconfigure.task.TaskSchedulingProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'platformTransactionManagerCustomizers'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'spring.transaction-org.springframework.boot.autoconfigure.transaction.TransactionProperties'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorConfiguration$ReactorNetty'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration$WebClientCodecsConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'exchangeStrategiesCustomizer'
+2022-11-20 08:12:46 [main] DEBUG : Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration'
+2022-11-20 08:12:46 [main] DEBUG : Starting beans in phase -2147483647
+2022-11-20 08:12:46 [main] DEBUG : Successfully started bean 'springBootLoggingLifecycle'
+2022-11-20 08:12:46 [main] DEBUG : Starting beans in phase 2147483547
+2022-11-20 08:12:46 [main] INFO  : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = earliest
+	bootstrap.servers = [localhost:9092, localhost:9093, localhost:9094]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-resource-processor-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = resource-processor
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_committed
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2022-11-20 08:12:46 [main] DEBUG : [Consumer clientId=consumer-resource-processor-1, groupId=resource-processor] Initializing the Kafka consumer
