@@ -74,6 +74,7 @@ public class ResourceProcessorService {
     }
 
     private void removeIfExists(File file) {
+        log.info("Removing file '{}'", file);
         try {
             Files.deleteIfExists(file.toPath());
         } catch (NoSuchFileException exception) {
