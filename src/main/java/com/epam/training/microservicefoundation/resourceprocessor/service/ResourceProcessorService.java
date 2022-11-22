@@ -24,12 +24,12 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ResourceProcessorService {
     private static final Logger log = LoggerFactory.getLogger(ResourceProcessorService.class);
-    private final ResourceRecordValidator resourceRecordValidator;
+    private final Validator<ResourceRecord> resourceRecordValidator;
     private final ResourceServiceClient resourceServiceClient;
     private final SongServiceClient songServiceClient;
 
     @Autowired
-    public ResourceProcessorService(ResourceRecordValidator resourceRecordValidator,
+    public ResourceProcessorService(Validator<ResourceRecord> resourceRecordValidator,
                                     ResourceServiceClient resourceServiceClient,
                                     SongServiceClient songServiceClient) {
         this.resourceRecordValidator = resourceRecordValidator;
@@ -38,23 +38,23 @@ public class ResourceProcessorService {
     }
 
 
-    public boolean processResource(ResourceRecord record) {
-        log.info("Processing resource record: {}", record);
+    public boolean processResource(ResourceRecord resourceRecord) {
+        log.info("Processing resource record: {}", resourceRecord);
 
-        if(!resourceRecordValidator.validate(record)) {
+        if(!resourceRecordValidator.validate(resourceRecord)) {
             IllegalArgumentException ex = new IllegalArgumentException(String.format("Resource record '%s' " +
-                    "was not validated, check your required parameters", record));
+                    "was not validated, check your required parameters", resourceRecord));
 
-            log.error("Resource record '{}' was not valid to parse metadata\nreason:", record, ex);
+            log.error("Resource record '{}' was not valid to parse metadata\nreason:", resourceRecord, ex);
             throw ex;
         }
 
-        Optional<File> fileOptional = resourceServiceClient.getById(record.getId());
+        Optional<File> fileOptional = resourceServiceClient.getById(resourceRecord.getId());
         boolean isProcessed = fileOptional.map(file -> {
             SongRecord songRecord = null;
             try {
                 Mp3File mp3File = new Mp3File(file);
-                songRecord = new SongRecord.Builder(record.getId(), mp3File.getId3v1Tag().getTitle(),
+                songRecord = new SongRecord.Builder(resourceRecord.getId(), mp3File.getId3v1Tag().getTitle(),
                         String.format(
                                 "%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60))
                         .artist(mp3File.getId3v1Tag().getArtist())
@@ -62,7 +62,7 @@ public class ResourceProcessorService {
                         .year(Integer.parseInt(mp3File.getId3v1Tag().getYear()))
                         .build();
             } catch (InvalidDataException | UnsupportedTagException | IOException ex) {
-                log.error("MP3 file processing failed for resource '{}' ", record, ex);
+                log.error("MP3 file processing failed for resource '{}' ", resourceRecord, ex);
             }
             return songRecord;
         })

@@ -1,17 +1,13 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
 import com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceType;
-import com.epam.training.microservicefoundation.resourceprocessor.service.FileConvertor;
+import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.retry.RecoveryCallback;
-import org.springframework.retry.RetryCallback;
-import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 
@@ -25,9 +21,9 @@ public class ResourceServiceClient extends BaseClient {
     private static final String RESOURCES = "/resources";
     private static final String ID = "/{id}";
     private final String acceptHeader;
-    private final FileConvertor convertor;
+    private final Convertor<File, Flux<DataBuffer>> convertor;
     private final RetryTemplate retryTemplate;
-    public ResourceServiceClient(Map<String, String> headers, FileConvertor convertor, RetryTemplate retryTemplate) {
+    public ResourceServiceClient(Map<String, String> headers, Convertor<File, Flux<DataBuffer>> convertor, RetryTemplate retryTemplate) {
         super(headers);
         this.acceptHeader = headers.get(HttpHeaders.ACCEPT);
         this.convertor = convertor;
