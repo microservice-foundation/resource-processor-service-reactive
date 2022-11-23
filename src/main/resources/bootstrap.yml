@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: resource-processor-service
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+        service-id: configuration-service
+      retry:
+        initial-interval: 2000
+        multiplier: 1.5
+        max-interval: 60000
+        max-attempts: 100
+
+# eureka configuration
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: http://localhost:8770/eureka
+    register-with-eureka: true
+    fetch-registry: true
+    healthcheck:
+      enabled: true
+  instance:
+    hostname: ${spring.application.name}
+    instance-id: ${spring.application.name}:${random.int}
+
+# application configuration
+server:
+  port: 0
+logging:
+  level:
+    root: DEBUG

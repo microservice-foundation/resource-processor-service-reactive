@@ -1,7 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.configuration;
 
 import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceType;
 import com.epam.training.microservicefoundation.resourceprocessor.service.FileConvertor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +12,11 @@ import org.springframework.retry.support.RetryTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.*;
+import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.CONNECTION_TIMEOUT;
+import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.READ_TIMEOUT;
+import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.RESPONSE_TIMEOUT;
+import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.URL;
+import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.WRITE_TIMEOUT;
 
 @Configuration
 public class ResourceServiceClientConfiguration {
