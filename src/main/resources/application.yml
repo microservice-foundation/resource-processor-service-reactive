@@ -8,11 +8,11 @@ kafka:
 
 # client configuration
 resource-service:
-  endpoint: http://localhost:8090/api/v1
+  endpoint: http://resource-service/api/v1
   accept:
     mime-type: audio/mpeg
 song-service:
-  endpoint: http://localhost:8091/api/v1
+  endpoint: http://song-service/api/v1
 web-client:
   connection:
     timeout: 5000
@@ -28,3 +28,12 @@ retry:
   max:
     attempts: 3
     delay: 500
+
+# application configuration
+server:
+  port: 0
+logging:
+  level:
+    root: DEBUG
+
+
