@@ -53,6 +53,7 @@ public class ResourceProcessorService {
         boolean isProcessed = fileOptional.map(file -> {
             SongRecord songRecord = null;
             try {
+                // TODO: consider v2Tag if v1Tag is null
                 Mp3File mp3File = new Mp3File(file);
                 songRecord = new SongRecord.Builder(resourceRecord.getId(), mp3File.getId3v1Tag().getTitle(),
                         String.format(

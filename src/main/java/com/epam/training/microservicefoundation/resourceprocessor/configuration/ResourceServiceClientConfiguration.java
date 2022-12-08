@@ -8,39 +8,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.CONNECTION_TIMEOUT;
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.READ_TIMEOUT;
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.RESPONSE_TIMEOUT;
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.URL;
-import static com.epam.training.microservicefoundation.resourceprocessor.client.BaseClient.WRITE_TIMEOUT;
 
 @Configuration
 public class ResourceServiceClientConfiguration {
-
-    @Value("${resource-service.endpoint}")
-    private String resourceServiceEndpoint;
-    @Value("${web-client.connection.timeout}")
-    private String connectionTimeout;
-    @Value("${web-client.response.timeout}")
-    private String responseTimeout;
-    @Value("${web-client.read.timeout}")
-    private String readTimeout;
-    @Value("${web-client.write.timeout}")
-    private String writeTimeout;
     @Value("${resource-service.accept.mime-type}")
     private String acceptMimeType;
 
     private Map<String, String> resourceClientHeader() {
         Map<String, String> header = new HashMap<>();
-        header.put(URL, resourceServiceEndpoint);
-        header.put(CONNECTION_TIMEOUT, connectionTimeout);
-        header.put(RESPONSE_TIMEOUT, responseTimeout);
-        header.put(READ_TIMEOUT, readTimeout);
-        header.put(WRITE_TIMEOUT, writeTimeout);
         header.put(HttpHeaders.ACCEPT, acceptMimeType);
         return header;
     }
@@ -50,7 +30,7 @@ public class ResourceServiceClientConfiguration {
     }
 
     @Bean
-    public ResourceServiceClient resourceServiceClient(RetryTemplate retryTemplate) {
-        return new ResourceServiceClient(resourceClientHeader(), fileConvertor(), retryTemplate);
+    public ResourceServiceClient resourceServiceClient(RetryTemplate retryTemplate, WebClient webClient) {
+        return new ResourceServiceClient(resourceClientHeader(), fileConvertor(), retryTemplate, webClient);
     }
 }
