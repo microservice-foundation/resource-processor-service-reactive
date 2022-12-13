@@ -7,30 +7,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 
-public class SongServiceClient extends BaseClient {
+public class SongServiceClient {
     private static final Logger log = LoggerFactory.getLogger(SongServiceClient.class);
     private static final String SONGS = "/songs";
+    private final WebClient webClient;
     private final String acceptHeader;
     private final RetryTemplate retryTemplate;
-    public SongServiceClient(Map<String, String> headers, RetryTemplate retryTemplate) {
-        super(headers);
-        acceptHeader = headers.get(HttpHeaders.ACCEPT);
+    public SongServiceClient(Map<String, String> headers, RetryTemplate retryTemplate, WebClient webClient) {
+        this.webClient = webClient;
+        this.acceptHeader = headers.get(HttpHeaders.ACCEPT);
         this.retryTemplate = retryTemplate;
     }
 
     public SongRecordId post(SongRecord songRecord) {
         return retryTemplate.execute(
-                context ->
-                        post(UriComponentsBuilder.newInstance().path(SONGS).build().toUri())
-                            .accept(MediaType.valueOf(acceptHeader))
-                            .bodyValue(songRecord)
-                            .retrieve()
-                            .bodyToMono(SongRecordId.class)
-                            .block(),
+                context -> webClient.post()
+                    .uri(uriBuilder -> uriBuilder.path(SONGS).build())
+                    .accept(MediaType.valueOf(acceptHeader))
+                    .bodyValue(songRecord)
+                    .retrieve()
+                    .bodyToMono(SongRecordId.class)
+                    .block(),
                 context -> {
                     log.error("Sending post request to song service failed with '{}' retry attempts",
                             context.getRetryCount());
