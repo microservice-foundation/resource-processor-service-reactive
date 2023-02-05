@@ -1,6 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceType;
+import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
 import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ResourceServiceClient {
+    //TODO: change to reactive
     private static final Logger log = LoggerFactory.getLogger(ResourceServiceClient.class);
     private static final String RESOURCES = "/resources";
     private static final String ID = "/{id}";

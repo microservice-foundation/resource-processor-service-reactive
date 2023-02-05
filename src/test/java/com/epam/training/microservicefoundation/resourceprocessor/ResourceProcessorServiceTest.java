@@ -1,9 +1,9 @@
-package com.epam.training.microservicefoundation.service;
+package com.epam.training.microservicefoundation.resourceprocessor;
 
 import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceRecord;
-import com.epam.training.microservicefoundation.resourceprocessor.domain.SongRecordId;
+import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceRecord;
+import com.epam.training.microservicefoundation.resourceprocessor.model.SongRecord;
 import com.epam.training.microservicefoundation.resourceprocessor.service.ResourceProcessorService;
 import com.epam.training.microservicefoundation.resourceprocessor.service.ResourceRecordValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,13 +46,11 @@ class ResourceProcessorServiceTest {
     @Test
     void shouldProcessResource() throws IOException {
         ResourceRecord resourceRecord = new ResourceRecord(1L);
-        File file = ResourceUtils.getFile("src/test/resources/files/mpthreetest.mp3");
-        File testFile = ResourceUtils.getFile("src/test/resources/files/test.mp3");
-        Files.copy(file.toPath(), testFile.toPath());
+        File testFile = testFile();
 
         when(resourceRecordValidator.validate(resourceRecord)).thenReturn(Boolean.TRUE);
         when(resourceServiceClient.getById(resourceRecord.getId())).thenReturn(Optional.of(testFile));
-        when(songServiceClient.post(any())).thenReturn(new SongRecordId(1L));
+        when(songServiceClient.post(any())).thenReturn(new SongRecord(1L));
 
         boolean isProcessed = service.processResource(resourceRecord);
         assertTrue(isProcessed);
@@ -88,9 +86,7 @@ class ResourceProcessorServiceTest {
     @Test
     void shouldReturnEmptySongRecordIdWhenProcessResource() throws IOException {
         ResourceRecord resourceRecord = new ResourceRecord(1L);
-        File file = ResourceUtils.getFile("src/test/resources/files/mpthreetest.mp3");
-        File testFile = ResourceUtils.getFile("src/test/resources/files/test.mp3");
-        Files.copy(file.toPath(), testFile.toPath());
+        File testFile = testFile();
 
         when(resourceRecordValidator.validate(resourceRecord)).thenReturn(Boolean.TRUE);
         when(resourceServiceClient.getById(resourceRecord.getId())).thenReturn(Optional.of(testFile));
@@ -102,5 +98,14 @@ class ResourceProcessorServiceTest {
         verify(resourceRecordValidator, times(1)).validate(resourceRecord);
         verify(resourceServiceClient, times(1)).getById(resourceRecord.getId());
         verify(songServiceClient, times(1)).post(any());
+    }
+
+    private File testFile() throws IOException {
+        File file = ResourceUtils.getFile("src/test/resources/files/mpthreetest.mp3");
+        File testFile = ResourceUtils.getFile("src/test/resources/files/test.mp3");
+        if(!testFile.exists()) {
+            Files.copy(file.toPath(), testFile.toPath());
+        }
+        return testFile;
     }
 }

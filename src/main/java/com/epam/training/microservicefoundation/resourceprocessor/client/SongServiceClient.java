@@ -1,7 +1,7 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.domain.SongRecord;
-import com.epam.training.microservicefoundation.resourceprocessor.domain.SongRecordId;
+import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
+import com.epam.training.microservicefoundation.resourceprocessor.model.SongRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.Map;
 
 public class SongServiceClient {
+    //TODO: change to reactive
     private static final Logger log = LoggerFactory.getLogger(SongServiceClient.class);
     private static final String SONGS = "/songs";
     private final WebClient webClient;
@@ -23,14 +24,14 @@ public class SongServiceClient {
         this.retryTemplate = retryTemplate;
     }
 
-    public SongRecordId post(SongRecord songRecord) {
+    public SongRecord post(SongMetadata songMetadata) {
         return retryTemplate.execute(
                 context -> webClient.post()
                     .uri(uriBuilder -> uriBuilder.path(SONGS).build())
                     .accept(MediaType.valueOf(acceptHeader))
-                    .bodyValue(songRecord)
+                    .bodyValue(songMetadata)
                     .retrieve()
-                    .bodyToMono(SongRecordId.class)
+                    .bodyToMono(SongRecord.class)
                     .block(),
                 context -> {
                     log.error("Sending post request to song service failed with '{}' retry attempts",
