@@ -23,7 +23,7 @@ public class SongMetadata implements Serializable {
     }
     public static class Builder {
         private final long resourceId;
-        private final String name;
+        private String name;
         private String artist;
         private String album;
         private final String length;
@@ -47,6 +47,11 @@ public class SongMetadata implements Serializable {
 
         public Builder year(int year) {
             this.year = year;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
             return this;
         }
 

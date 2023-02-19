@@ -1,5 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.service;
 
+import com.epam.training.microservicefoundation.resourceprocessor.common.FileUtils;
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 public class FileConvertor implements Convertor<File, Flux<DataBuffer>> {
     private static final Logger log = LoggerFactory.getLogger(FileConvertor.class);
-    private static final String TEMPORARY_DIRECTORY = "src/main/resources/temp/";
     private final ResourceType resourceType;
     public FileConvertor(ResourceType resourceType) {
         this.resourceType = resourceType;
@@ -22,10 +22,7 @@ public class FileConvertor implements Convertor<File, Flux<DataBuffer>> {
 
     @Override
     public File covert(Flux<DataBuffer> input) {
-        log.info("Converting input data buffer to a file with type '{}'", resourceType);
-        Path path = Paths.get(TEMPORARY_DIRECTORY + LocalDateTime.now() + resourceType.getExtension());
-        return DataBufferUtils.write(input, path, StandardOpenOption.CREATE)
-                .thenReturn(path.toFile())
-                .block();
+        log.info("Converting data buffer '{}' to file", input);
+        return FileUtils.writeDataBuffer(input, resourceType).block();
     }
 }

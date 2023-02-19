@@ -35,6 +35,7 @@ public class ResourceServiceClient {
     }
 
     public Optional<File> getById(long id) {
+        log.info("Getting resource file by resource id '{}' from resource service", id);
         return retryTemplate.execute(context -> {
             Flux<DataBuffer> dataBufferFlux = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
@@ -45,7 +46,8 @@ public class ResourceServiceClient {
 
             return Optional.ofNullable(convertor.covert(dataBufferFlux));
         }, context -> {
-            log.error("Getting resource file by id '{}' failed after '{}' retry attempts", id, context.getRetryCount());
+            log.error("Getting resource file by resource id '{}' failed after '{}' retry attempts", id,
+                    context.getRetryCount());
             return Optional.empty();
         });
     }

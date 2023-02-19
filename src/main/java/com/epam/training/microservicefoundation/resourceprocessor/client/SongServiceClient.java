@@ -25,6 +25,7 @@ public class SongServiceClient {
     }
 
     public SongRecord post(SongMetadata songMetadata) {
+        log.info("Sending a post request with song metadata '{}' to song service", songMetadata);
         return retryTemplate.execute(
                 context -> webClient.post()
                     .uri(uriBuilder -> uriBuilder.path(SONGS).build())

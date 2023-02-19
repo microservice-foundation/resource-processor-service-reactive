@@ -2,6 +2,7 @@ package com.epam.training.microservicefoundation.resourceprocessor.service;
 
 import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.common.FileUtils;
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceRecord;
 import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -15,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -62,42 +59,33 @@ public class ResourceProcessorService {
         .map(songServiceClient::post)
         .isPresent();
 
-        fileOptional.ifPresent(this::removeIfExists);
+        fileOptional.ifPresent(FileUtils::delete);
         return isProcessed;
     }
 
     private SongMetadata processFile(long resourceId, File file) throws InvalidDataException, UnsupportedTagException, IOException {
+        log.info("Processing file '{}' related to resource id '{}'", file.getName(), resourceId);
         Mp3File mp3File = new Mp3File(file);
         String duration = String.format("%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60);
+        SongMetadata.Builder songMetadataBuilder = new SongMetadata.Builder(resourceId, file.getName(), duration);
         if(mp3File.hasId3v1Tag()) {
-            return new SongMetadata.Builder(resourceId, mp3File.getId3v1Tag().getTitle(),
-                    duration)
-                    .artist(mp3File.getId3v1Tag().getArtist())
-                    .album(mp3File.getId3v1Tag().getAlbum())
-                    .year(Integer.parseInt(mp3File.getId3v1Tag().getYear()))
-                    .build();
+            songMetadataBuilder
+                .name(mp3File.getId3v1Tag().getTitle())
+                .artist(mp3File.getId3v1Tag().getArtist())
+                .album(mp3File.getId3v1Tag().getAlbum())
+                .year(Integer.parseInt(mp3File.getId3v1Tag().getYear()))
+                .build();
         } else if (mp3File.hasId3v2Tag()) {
-            return new SongMetadata.Builder(resourceId, mp3File.getId3v2Tag().getTitle(),
-                    duration)
-                    .artist(mp3File.getId3v2Tag().getArtist())
-                    .album(mp3File.getId3v2Tag().getAlbum())
-                    .year(Integer.parseInt(mp3File.getId3v2Tag().getYear()))
-                    .build();
-        } else {
-            return new SongMetadata.Builder(resourceId, "No name: " + LocalDateTime.now(), duration).build();
+            songMetadataBuilder
+                .name(mp3File.getId3v2Tag().getTitle())
+                .artist(mp3File.getId3v2Tag().getArtist())
+                .album(mp3File.getId3v2Tag().getAlbum())
+                .year(Integer.parseInt(mp3File.getId3v2Tag().getYear()))
+                .build();
         }
-    }
 
-    private void removeIfExists(File file) {
-        log.info("Removing file '{}'", file);
-        try {
-            Files.deleteIfExists(file.toPath());
-        } catch (NoSuchFileException exception) {
-            log.error("File '{}' does not exit", file.toPath(), exception);
-        } catch (DirectoryNotEmptyException exception) {
-            log.error("Directory '{}' is not empty ", file.toPath(), exception);
-        } catch (IOException exception) {
-            log.error("File permission might be caught by user", exception);
-        }
+        SongMetadata songMetadata = songMetadataBuilder.build();
+        log.debug("File processed successfully: {}", songMetadata);
+        return songMetadata;
     }
 }
