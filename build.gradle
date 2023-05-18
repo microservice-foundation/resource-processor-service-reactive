@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id "org.springframework.boot" version "$springBootVersion"
     id 'io.spring.dependency-management' version "${dependancyManagementVersion}"
-//    id 'maven-publish'
 }
 
 group 'com.epam.training'
@@ -41,7 +40,6 @@ dependencies {
     testImplementation 'org.testcontainers:kafka'
     testImplementation 'com.squareup.okhttp3:okhttp:4.10.0'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
-//    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 }
 
 dependencyManagement {
@@ -56,31 +54,4 @@ test {
     testLogging {
         exceptionFormat = 'full'
     }
-//    afterSuite { desc, result ->
-//        if (!desc.parent) {
-//            println "Results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-//            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false")
-//            if (result.testCount == 0 && !skipTests) {
-//                throw new IllegalStateException("No tests were found. Failing the build")
-//            }
-//        }
-//    }
 }
-
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            artifact bootJar
-//
-//            // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/273
-//            versionMapping {
-//                usage("java-api") {
-//                    fromResolutionOf("runtimeClasspath")
-//                }
-//                usage("java-runtime") {
-//                    fromResolutionResult()
-//                }
-//            }
-//        }
-//    }
-//}
