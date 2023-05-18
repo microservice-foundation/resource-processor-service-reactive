@@ -1,55 +1,34 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
-import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
+import com.epam.training.microservicefoundation.resourceprocessor.configuration.RetryProperties;
+import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-
-import java.io.File;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import reactor.util.retry.Retry;
 
 public class ResourceServiceClient {
-    //TODO: change to reactive
-    private static final Logger log = LoggerFactory.getLogger(ResourceServiceClient.class);
-    private static final String RESOURCES = "/resources";
-    private static final String ID = "/{id}";
-    private final WebClient webClient;
-    private final String acceptHeader;
-    private final Convertor<File, Flux<DataBuffer>> convertor;
-    private final RetryTemplate retryTemplate;
-    public ResourceServiceClient(Map<String, String> headers, Convertor<File, Flux<DataBuffer>> convertor,
-                                 RetryTemplate retryTemplate, WebClient webClient) {
+  private static final Logger log = LoggerFactory.getLogger(ResourceServiceClient.class);
+  private static final String RESOURCES = "/resources";
+  private static final String ID = "/{id}";
+  private final WebClient webClient;
+  private final RetryProperties retryProperties;
 
-        this.webClient = webClient;
-        this.acceptHeader = headers.get(HttpHeaders.ACCEPT);
-        this.convertor = convertor;
-        this.retryTemplate = retryTemplate;
-    }
+  public ResourceServiceClient(WebClient webClient, RetryProperties retryProperties) {
+    this.webClient = webClient;
+    this.retryProperties = retryProperties;
+  }
 
-    public Optional<File> getById(long id) {
-        log.info("Getting resource file by resource id '{}' from resource service", id);
-        return retryTemplate.execute(context -> {
-            Flux<DataBuffer> dataBufferFlux = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
-                .accept(MediaType.valueOf(Objects.requireNonNull(ResourceType.getResourceTypeByMimeType(acceptHeader))
-                        .getMimeType()))
-                .retrieve()
-                .bodyToFlux(DataBuffer.class);
-
-            return Optional.ofNullable(convertor.covert(dataBufferFlux));
-        }, context -> {
-            log.error("Getting resource file by resource id '{}' failed after '{}' retry attempts", id,
-                    context.getRetryCount());
-            return Optional.empty();
-        });
-    }
+  public Flux<DataBuffer> getById(long id) {
+    log.info("Getting resource file by resource id '{}' from resource service", id);
+    return webClient.get().uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
+        .accept(MediaType.APPLICATION_OCTET_STREAM)
+        .retrieve().bodyToFlux(DataBuffer.class)
+        .retryWhen(Retry.backoff(retryProperties.getMaxRetries(),
+            Duration.ofSeconds(retryProperties.getInterval())));
+  }
 
 }

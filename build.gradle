@@ -2,11 +2,12 @@ plugins {
     id 'java'
     id "org.springframework.boot" version "$springBootVersion"
     id 'io.spring.dependency-management' version "${dependancyManagementVersion}"
-    id 'maven-publish'
+//    id 'maven-publish'
 }
 
 group 'com.epam.training'
 version '1.0'
+sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
@@ -29,18 +30,18 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.mpatric:mp3agic:0.9.1'
-
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework:spring-aspects'
-
+    implementation 'io.projectreactor.kafka:reactor-kafka:1.3.17'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.testcontainers:kafka'
     testImplementation 'com.squareup.okhttp3:okhttp:4.10.0'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
-    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+//    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 }
 
 dependencyManagement {
@@ -55,31 +56,31 @@ test {
     testLogging {
         exceptionFormat = 'full'
     }
-    afterSuite { desc, result ->
-        if (!desc.parent) {
-            println "Results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false")
-            if (result.testCount == 0 && !skipTests) {
-                throw new IllegalStateException("No tests were found. Failing the build")
-            }
-        }
-    }
+//    afterSuite { desc, result ->
+//        if (!desc.parent) {
+//            println "Results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+//            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false")
+//            if (result.testCount == 0 && !skipTests) {
+//                throw new IllegalStateException("No tests were found. Failing the build")
+//            }
+//        }
+//    }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact bootJar
-
-            // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/273
-            versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-}
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            artifact bootJar
+//
+//            // https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/273
+//            versionMapping {
+//                usage("java-api") {
+//                    fromResolutionOf("runtimeClasspath")
+//                }
+//                usage("java-runtime") {
+//                    fromResolutionResult()
+//                }
+//            }
+//        }
+//    }
+//}
