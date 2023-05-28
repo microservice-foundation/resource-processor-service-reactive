@@ -18,6 +18,7 @@ spring:
       isolation-level: read_committed
       properties:
         spring.json.trusted.packages: com.epam.training.microservicefoundation.resourceprocessor.model
+        spring.json.use.type.headers: false
         spring.json.value.default.type: com.epam.training.microservicefoundation.resourceprocessor.model.ResourceRecord
       retry:
         backoff:
@@ -25,6 +26,8 @@ spring:
           multiplier: 2
           max-retries: 3
     properties.spring.json.trusted.packages: com.epam.training.microservicefoundation.resourceprocessor.model
+
+
 
 # client configuration
 api-gateway.endpoint: lb://${api-gateway.service.name}
