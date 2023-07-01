@@ -6,6 +6,7 @@ import com.epam.training.microservicefoundation.resourceprocessor.common.FileUti
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceRecord;
 import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
 import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
+import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
@@ -35,7 +36,6 @@ public class ResourceProcessorService {
     this.convertor = songFileConverter;
   }
 
-
   public Mono<Void> processResource(ResourceRecord resourceRecord) {
     log.info("Processing resource record");
     return convertor.covert(resourceServiceClient.getById(resourceRecord.getId()))
@@ -47,30 +47,28 @@ public class ResourceProcessorService {
   private Mono<SongMetadata> processFile(long resourceId, File file) {
     log.info("Processing file '{}' related to resource id '{}'", file.getName(), resourceId);
     try {
-      Mp3File mp3File = new Mp3File(file);
-      String duration = String.format("%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60);
-      SongMetadata.Builder songMetadataBuilder = new SongMetadata.Builder(resourceId, file.getName(), duration);
-      if (mp3File.hasId3v1Tag()) {
-        songMetadataBuilder
-            .name(mp3File.getId3v1Tag().getTitle())
-            .artist(mp3File.getId3v1Tag().getArtist())
-            .album(mp3File.getId3v1Tag().getAlbum())
-            .year(Integer.parseInt(mp3File.getId3v1Tag().getYear()))
-            .build();
-      } else if (mp3File.hasId3v2Tag()) {
-        songMetadataBuilder
-            .name(mp3File.getId3v2Tag().getTitle())
-            .artist(mp3File.getId3v2Tag().getArtist())
-            .album(mp3File.getId3v2Tag().getAlbum())
-            .year(Integer.parseInt(mp3File.getId3v2Tag().getYear()))
-            .build();
-      }
-
-      SongMetadata songMetadata = songMetadataBuilder.build();
+      SongMetadata songMetadata = buildSongMetadata(file, resourceId);
       log.debug("File processed successfully: {}", songMetadata);
       return Mono.just(songMetadata);
     } catch (IOException | UnsupportedTagException | InvalidDataException e) {
       return Mono.error(e);
     }
+  }
+
+  private SongMetadata buildSongMetadata(File file, long resourceId)
+      throws InvalidDataException, UnsupportedTagException, IOException {
+
+    Mp3File mp3File = new Mp3File(file);
+    String duration = String.format("%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60);
+    SongMetadata.Builder songMetadataBuilder = new SongMetadata.Builder(resourceId, file.getName(), duration);
+    ID3v1 tag = mp3File.hasId3v1Tag() ? mp3File.getId3v1Tag() : mp3File.getId3v2Tag();
+    if (tag != null) {
+      songMetadataBuilder
+          .name(tag.getTitle())
+          .artist(tag.getArtist())
+          .album(tag.getAlbum())
+          .year(Integer.parseInt(tag.getYear()));
+    }
+    return songMetadataBuilder.build();
   }
 }

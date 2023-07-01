@@ -38,8 +38,8 @@ public class KafkaListener {
     listenWithHandler(consumerTemplate, f -> handler(eventListener, f));
   }
 
-  private <T> void listenWithHandler(ReactiveKafkaConsumerTemplate<String,T> consumerTemplate, Function<ReceiverRecord<String, T>,
-        Mono<?>> handler) {
+  private <T> void listenWithHandler(ReactiveKafkaConsumerTemplate<String, T> consumerTemplate, Function<ReceiverRecord<String, T>,
+      Mono<?>> handler) {
     consumerTemplate.receive()
         .doOnNext(receiverRecord -> log.info("Received event message key={}, value={}", receiverRecord.key(), receiverRecord.value()))
         .flatMap(receiverRecord -> handler.apply(receiverRecord)
