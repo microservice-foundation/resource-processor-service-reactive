@@ -1,9 +1,9 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.RetryProperties;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,8 +27,8 @@ public class ResourceServiceClient {
     return webClient.get().uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
         .accept(MediaType.APPLICATION_OCTET_STREAM)
         .retrieve().bodyToFlux(DataBuffer.class)
-        .retryWhen(Retry.backoff(retryProperties.getMaxRetries(),
-            Duration.ofSeconds(retryProperties.getInterval())));
+        .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
+            .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
 
 }

@@ -1,11 +1,11 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.RetryProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongRecord;
+import com.epam.training.microservicefoundation.resourceprocessor.model.SongDTO;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -22,16 +22,14 @@ public class SongServiceClient {
     this.retryProperties = retryProperties;
   }
 
-  public Mono<SongRecord> post(SongMetadata songMetadata) {
+  public Mono<SongDTO> post(SongMetadata songMetadata) {
     log.info("Sending a post request with song metadata '{}' to song service", songMetadata);
     return webClient.post().uri(uriBuilder -> uriBuilder.path(SONGS).build())
         .accept(MediaType.APPLICATION_JSON)
         .bodyValue(songMetadata)
         .retrieve()
-        .bodyToMono(SongRecord.class)
-        .retryWhen(Retry.backoff(retryProperties.getMaxRetries(),
-            Duration.ofSeconds(retryProperties.getInterval())));
-
+        .bodyToMono(SongDTO.class)
+        .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
+        .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
-
 }

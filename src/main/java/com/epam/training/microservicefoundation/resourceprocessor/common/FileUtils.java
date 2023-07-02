@@ -32,7 +32,7 @@ public final class FileUtils {
       createTempDirectory(tempDirectoryPath);
     }
     Path filePath = tempDirectoryPath.resolve(System.currentTimeMillis() + resourceType.getExtension());
-    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).thenReturn(filePath.toFile());
+    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).map(result -> filePath.toFile());
   }
 
   private static void createTempDirectory(Path path) {
