@@ -2,9 +2,9 @@ package com.epam.training.microservicefoundation.resourceprocessor.kafka.consume
 
 import com.epam.training.microservicefoundation.resourceprocessor.common.Pair;
 import com.epam.training.microservicefoundation.resourceprocessor.model.ReceiverRecordException;
+import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.ReactiveKafkaEventListener;
 import java.time.Duration;
-import java.util.List;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,19 +21,20 @@ public class KafkaConsumer {
   private static final Logger log = LoggerFactory.getLogger(KafkaConsumer.class);
   private final DeadLetterPublishingRecoverer deadLetterPublishingRecoverer;
   private final RetryProperties retryProperties;
-  private final List<Pair<ReactiveKafkaConsumerTemplate<String, Object>, ReactiveKafkaEventListener<Object>>> consumerAndListener;
+  private final Pair<ReactiveKafkaConsumerTemplate<String, ResourceStagedEvent>, ReactiveKafkaEventListener<ResourceStagedEvent>>
+      resourceStagedEventListener;
 
   public KafkaConsumer(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer, RetryProperties retryProperties,
-      List<Pair<ReactiveKafkaConsumerTemplate<String, Object>, ReactiveKafkaEventListener<Object>>> consumerAndListener) {
-
-    this.consumerAndListener = consumerAndListener;
+      Pair<ReactiveKafkaConsumerTemplate<String, ResourceStagedEvent>, ReactiveKafkaEventListener<ResourceStagedEvent>>
+          resourceStagedEventListener) {
+    this.resourceStagedEventListener = resourceStagedEventListener;
     this.deadLetterPublishingRecoverer = deadLetterPublishingRecoverer;
     this.retryProperties = retryProperties;
   }
 
   @EventListener(ApplicationStartedEvent.class)
   public void subscribe() {
-    consumerAndListener.forEach(pair -> listen(pair.getFirst(), pair.getSecond()));
+    listen(resourceStagedEventListener.getFirst(), resourceStagedEventListener.getSecond());
   }
 
   private <T> void listen(ReactiveKafkaConsumerTemplate<String, T> consumerTemplate, ReactiveKafkaEventListener<T> eventListener) {
@@ -56,6 +57,7 @@ public class KafkaConsumer {
   }
 
   private <T> Mono<T> sendToDeadLockQueue(ReceiverRecordException exception) {
+    log.info("Exception occurred: {}, sending event '{}' to dead lock queue", exception, exception.getRecord());
     deadLetterPublishingRecoverer.accept(exception.getRecord(), exception);
     acknowledge(exception.getRecord());
     return Mono.empty();

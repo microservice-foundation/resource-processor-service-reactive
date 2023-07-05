@@ -5,11 +5,9 @@ import com.epam.training.microservicefoundation.resourceprocessor.configuration.
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.consumer.KafkaConsumer;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceStagedEvent;
-import com.epam.training.microservicefoundation.resourceprocessor.service.ReactiveKafkaEventListener;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceProcessorService;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceStagedEventListener;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -44,20 +42,10 @@ public class KafkaConfiguration {
   }
 
   @Bean
-  public KafkaConsumer kafkaConsumer(
-      List<Pair<ReactiveKafkaConsumerTemplate<String, Object>, ReactiveKafkaEventListener<Object>>> consumerAndListeners,
-      DeadLetterPublishingRecoverer deadLetterPublishingRecoverer, RetryProperties retryProperties) {
-    return new KafkaConsumer(deadLetterPublishingRecoverer, retryProperties, consumerAndListeners);
-  }
-
-  @Bean
-  public List<Pair<ReactiveKafkaConsumerTemplate<String, ?>, ReactiveKafkaEventListener<?>>> consumerAndListeners(
+  public KafkaConsumer kafkaConsumer(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer, RetryProperties retryProperties,
       KafkaProperties kafkaProperties, TopicProperties topicProperties, ResourceProcessorService resourceProcessorService) {
-    return List.of(Pair.of(resourceStagedEventConsumer(kafkaProperties, topicProperties), resourceStagedEventListener(resourceProcessorService)));
-  }
-
-  private ResourceStagedEventListener resourceStagedEventListener(ResourceProcessorService service) {
-    return new ResourceStagedEventListener(service);
+    return new KafkaConsumer(deadLetterPublishingRecoverer, retryProperties, Pair.of(resourceStagedEventConsumer(kafkaProperties,
+        topicProperties), new ResourceStagedEventListener(resourceProcessorService)));
   }
 
   private ReactiveKafkaConsumerTemplate<String, ResourceStagedEvent> resourceStagedEventConsumer(KafkaProperties kafkaProperties,
@@ -66,7 +54,7 @@ public class KafkaConfiguration {
         ReceiverOptions.create(kafkaProperties.buildConsumerProperties());
 
     ReceiverOptions<String, ResourceStagedEvent> receiverOptions =
-        basicReceiverOptions.subscription(Collections.singletonList(topicProperties.getResourcePermanent()));
+        basicReceiverOptions.subscription(Collections.singletonList(topicProperties.getResourceStaging()));
 
     return new ReactiveKafkaConsumerTemplate<>(receiverOptions);
   }

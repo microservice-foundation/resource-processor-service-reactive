@@ -14,8 +14,4 @@ public class ResourceProcessingContext {
   private long resourceId;
   private File resourceFile;
   private SongMetadata songMetadata;
-
-  public ResourceProcessingContext(long resourceId) {
-    this.resourceId = resourceId;
-  }
 }

@@ -2,10 +2,8 @@ package com.epam.training.microservicefoundation.resourceprocessor.service.imple
 
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.ReactiveKafkaEventListener;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-@Component
 public class ResourceStagedEventListener implements ReactiveKafkaEventListener<ResourceStagedEvent> {
   private final ResourceProcessorService service;
 

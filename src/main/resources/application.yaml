@@ -1,5 +1,3 @@
-bootstrap-servers-endpoints: ${KAFKA_BOOTSTRAP_SERVERS_ENDPOINTS:localhost:9092,localhost:9093,localhost:9094}
-
 # kafka configuration
 kafka:
   topic:
@@ -9,10 +7,11 @@ kafka:
       partition-count: 3
       replication-factor: 3
 
+bootstrap-servers-endpoints: ${KAFKA_BOOTSTRAP_SERVERS_ENDPOINTS:localhost:9092,localhost:9093,localhost:9094}
 spring:
   kafka:
     producer:
-      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS_ENDPOINTS:localhost:9091,localhost:9092,localhost:9093}
+      bootstrap-servers: ${bootstrap-servers-endpoints}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       enable-idempotence: true
@@ -56,6 +55,6 @@ web-client:
   base-url: lb://${api-gateway.service.name}
 
 # application configuration
-logging.level.root: DEBUG
+logging.level.root: INFO
 
 

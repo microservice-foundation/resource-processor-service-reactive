@@ -1,13 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.common;
 
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
@@ -16,6 +9,12 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public final class FileUtils {
   private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
@@ -26,13 +25,13 @@ public final class FileUtils {
   }
 
   public static Mono<File> writeDataBuffer(Flux<DataBuffer> dataBuffer, ResourceType resourceType) {
-    log.info("Writing data buffer '{}' to '{}'", dataBuffer, TARGET_DIRECTORY + TEMP_DIRECTORY);
+    log.info("Writing data buffer to '{}'", TARGET_DIRECTORY + File.separator +  TEMP_DIRECTORY);
     Path tempDirectoryPath = Paths.get(TARGET_DIRECTORY, TEMP_DIRECTORY);
     if (!Files.exists(tempDirectoryPath)) {
       createTempDirectory(tempDirectoryPath);
     }
     Path filePath = tempDirectoryPath.resolve(System.currentTimeMillis() + resourceType.getExtension());
-    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).map(result -> filePath.toFile());
+    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).thenReturn(filePath.toFile());
   }
 
   private static void createTempDirectory(Path path) {
