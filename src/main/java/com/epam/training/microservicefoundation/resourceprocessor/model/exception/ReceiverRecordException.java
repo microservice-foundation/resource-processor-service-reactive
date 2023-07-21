@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model;
+package com.epam.training.microservicefoundation.resourceprocessor.model.exception;
 
 import reactor.kafka.receiver.ReceiverRecord;
 

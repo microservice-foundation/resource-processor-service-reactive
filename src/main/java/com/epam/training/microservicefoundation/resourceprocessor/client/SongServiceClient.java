@@ -1,7 +1,7 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +22,13 @@ public class SongServiceClient {
     this.retryProperties = retryProperties;
   }
 
-  public Mono<SongDTO> post(SongMetadata songMetadata) {
-    log.info("Sending a post request with song metadata '{}' to song service", songMetadata);
+  public Mono<GetSongDTO> post(SaveSongDTO saveSongDTO) {
+    log.info("Sending a post request with song metadata '{}' to song service", saveSongDTO);
     return webClient.post().uri(uriBuilder -> uriBuilder.path(SONGS).build())
         .accept(MediaType.APPLICATION_JSON)
-        .bodyValue(songMetadata)
+        .bodyValue(saveSongDTO)
         .retrieve()
-        .bodyToMono(SongDTO.class)
+        .bodyToMono(GetSongDTO.class)
         .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
         .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }

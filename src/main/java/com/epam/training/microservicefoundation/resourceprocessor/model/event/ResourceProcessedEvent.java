@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model;
+package com.epam.training.microservicefoundation.resourceprocessor.model.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResourceProcessedEvent {
+  private static final long serialVersionUID = 21_07_2023_22_18L;
   private long id;
 }

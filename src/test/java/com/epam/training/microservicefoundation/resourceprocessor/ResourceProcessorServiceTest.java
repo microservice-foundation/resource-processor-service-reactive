@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceStagedEvent;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceStagedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
 import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceProcessorService;
 import java.io.File;
@@ -43,10 +43,11 @@ class ResourceProcessorServiceTest {
 
   @Test
   void shouldProcessResource() throws IOException {
-    long resourceRecordId = 1L;
+    final long resourceRecordId = 1L;
     when(resourceServiceClient.getById(resourceRecordId)).thenReturn(Flux.just(new DefaultDataBufferFactory().wrap(new byte[100])));
     when(convertor.covert(any())).thenReturn(Mono.just(testFile()));
-    when(songServiceClient.post(any(SongMetadata.class))).thenReturn(Mono.just(new SongDTO(1L)));
+    when(songServiceClient.post(any(SaveSongDTO.class))).thenReturn(Mono.just(new GetSongDTO(1L, 123L, "Test song", "Test album",
+        "Test singer", "1:00", 1999)));
     when(kafkaProducer.publish(any())).thenReturn(Mono.just(new FakeSenderResult<>(null, null, null)));
 
     StepVerifier.create(service.processResource(new ResourceStagedEvent(1L)))
@@ -56,7 +57,7 @@ class ResourceProcessorServiceTest {
 
   @Test
   void shouldReturnEmptyResourceWhenProcessResource() {
-    long resourceRecordId = 1L;
+    final long resourceRecordId = 1L;
     when(resourceServiceClient.getById(resourceRecordId)).thenReturn(Flux.empty());
     when(convertor.covert(Flux.empty())).thenReturn(Mono.empty());
 
@@ -68,10 +69,10 @@ class ResourceProcessorServiceTest {
 
   @Test
   void shouldReturnEmptySongRecordIdWhenProcessResource() throws IOException {
-    long resourceRecordId = 1L;
+    final long resourceRecordId = 1L;
     when(resourceServiceClient.getById(resourceRecordId)).thenReturn(Flux.just(new DefaultDataBufferFactory().wrap(new byte[100])));
     when(convertor.covert(any())).thenReturn(Mono.just(testFile()));
-    when(songServiceClient.post(any(SongMetadata.class))).thenReturn(Mono.empty());
+    when(songServiceClient.post(any(SaveSongDTO.class))).thenReturn(Mono.empty());
 
     StepVerifier.create(service.processResource(new ResourceStagedEvent(1L)))
         .expectNextCount(0)
@@ -80,8 +81,8 @@ class ResourceProcessorServiceTest {
   }
 
   private File testFile() throws IOException {
-    File file = ResourceUtils.getFile("src/test/resources/files/mpthreetest.mp3");
-    File testFile = ResourceUtils.getFile("src/test/resources/files/test.mp3");
+    final File file = ResourceUtils.getFile("src/test/resources/files/mpthreetest.mp3");
+    final File testFile = ResourceUtils.getFile("src/test/resources/files/test.mp3");
     if (!testFile.exists()) {
       Files.copy(file.toPath(), testFile.toPath());
     }

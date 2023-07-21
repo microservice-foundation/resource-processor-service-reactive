@@ -2,7 +2,7 @@ package com.epam.training.microservicefoundation.resourceprocessor.configuration
 
 import com.epam.training.microservicefoundation.resourceprocessor.common.Pair;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.TopicProperties;
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceProcessedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceProcessedEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;

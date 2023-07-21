@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.ClientConfiguration;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongDTO;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,65 +31,58 @@ class SongServiceClientTest {
   @Autowired
   private SongServiceClient songServiceClient;
 
+  private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", "12:35", 2012);
+  private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", "12:35", 2012);
+
   @Test
   void shouldPostSongMetadata(@Server(service = SONG) MockServer server) {
-    SongDTO songDTO = new SongDTO(2L);
-    server.response(HttpStatus.CREATED, songDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<SongDTO> post = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    Mono<GetSongDTO> post = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post)
-        .assertNext(result -> assertEquals(songDTO.getId(), result.getId()))
+        .assertNext(result -> assertEquals(getSongDTO, result))
         .verifyComplete();
   }
 
   @Test
   void shouldPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
     // After one retry
-    SongDTO songDTO1 = new SongDTO(2L);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.CREATED, songDTO1, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<SongDTO> post1 = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    Mono<GetSongDTO> post1 = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post1)
-        .assertNext(result -> assertEquals(songDTO1.getId(), result.getId()))
+        .assertNext(result -> assertEquals(getSongDTO, result))
         .verifyComplete();
 
     // After two retries
-    SongDTO songDTO2 = new SongDTO(2L);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.CREATED, songDTO2, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<SongDTO> post2 = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    Mono<GetSongDTO> post2 = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post2)
-        .assertNext(result -> assertEquals(songDTO2.getId(), result.getId()))
+        .assertNext(result -> assertEquals(getSongDTO, result))
         .verifyComplete();
 
     // After three retries
-    SongDTO songDTO3 = new SongDTO(2L);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.CREATED, songDTO3, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<SongDTO> post3 = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    Mono<GetSongDTO> post3 = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post3)
-        .assertNext(result -> assertEquals(songDTO3.getId(), result.getId()))
+        .assertNext(result -> assertEquals(getSongDTO, result))
         .verifyComplete();
 
     // Retries exhausted after three retries
-    SongDTO songDTO4 = new SongDTO(2L);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.INTERNAL_SERVER_ERROR);
     server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.CREATED, songDTO4, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<SongDTO> post4 = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    Mono<GetSongDTO> post4 = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post4)
         .consumeErrorWith(Exceptions::isRetryExhausted)
@@ -98,12 +91,10 @@ class SongServiceClientTest {
 
   @Test
   void shouldFailRetryWhenPostSongMetadata(@Server(service = SONG) MockServer server) {
-    SongDTO songDTO = new SongDTO(2L);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    Mono<SongDTO> post = songServiceClient.post(SongMetadata.builder().resourceId(123L).album("Different").year(2023).name("Ubiquitous")
-        .artist("Hoshim").length("3:56").build());
+    Mono<GetSongDTO> post = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post)
         .consumeErrorWith(Exceptions::isRetryExhausted)

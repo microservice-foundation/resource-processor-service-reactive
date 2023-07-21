@@ -4,10 +4,10 @@ import com.epam.training.microservicefoundation.resourceprocessor.client.Resourc
 import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.common.FileUtils;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceProcessedEvent;
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceProcessingContext;
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceStagedEvent;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
+import com.epam.training.microservicefoundation.resourceprocessor.model.context.ResourceProcessingContext;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceProcessedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -41,7 +41,7 @@ public class ResourceProcessorService {
     this.convertor = songFileConverter;
   }
 
-  public Mono<Void> processResource(ResourceStagedEvent resourceStagedEvent) {
+  public Mono<Void> processResource(final ResourceStagedEvent resourceStagedEvent) {
     log.info("Processing resource record with resource id '{}'", resourceStagedEvent.getId());
     ResourceProcessingContext context = new ResourceProcessingContext().withResourceId(resourceStagedEvent.getId());
     return convertor.covert(resourceServiceClient.getById(context.getResourceId()))
@@ -51,40 +51,37 @@ public class ResourceProcessorService {
         .flatMap(this::publishResourceProcessedEvent);
   }
 
-  private Mono<Void> publishResourceProcessedEvent(ResourceProcessingContext context) {
-    log.info("Publishing resource processed event for resource id '{}'", context.getResourceId());
+  private Mono<Void> publishResourceProcessedEvent(final ResourceProcessingContext context) {
     return kafkaProducer.publish(new ResourceProcessedEvent(context.getResourceId())).then();
   }
 
-  private Mono<ResourceProcessingContext> postSongMetadata(ResourceProcessingContext context) {
-    log.info("Sending song metadata via song service client: {}", context.getSongMetadata());
-    return songServiceClient.post(context.getSongMetadata()).map(result -> context);
+  private Mono<ResourceProcessingContext> postSongMetadata(final ResourceProcessingContext context) {
+    return songServiceClient.post(context.getSaveSongDTO()).map(context::withGetSongDTO);
   }
 
-  private Mono<ResourceProcessingContext> processFile(ResourceProcessingContext context) {
-    log.info("Processing file '{}' related to resource id '{}'", context.getResourceFile().getName(), context.getResourceId());
+  private Mono<ResourceProcessingContext> processFile(final ResourceProcessingContext context) {
     try {
-      ResourceProcessingContext ctx = buildSongMetadata(context);
-      return FileUtils.delete(ctx.getResourceFile()).thenReturn(ctx);
+      final ResourceProcessingContext resourceProcessingContext = buildSongMetadata(context);
+      return FileUtils.delete(resourceProcessingContext.getResourceFile()).thenReturn(resourceProcessingContext);
     } catch (IOException | UnsupportedTagException | InvalidDataException e) {
       log.error("Processing file '{}' with resource id '{}' failed",context.getResourceFile().getName(), context.getResourceId(), e);
       return Mono.error(e);
     }
   }
 
-  private ResourceProcessingContext buildSongMetadata(ResourceProcessingContext context)
+  private ResourceProcessingContext buildSongMetadata(final ResourceProcessingContext context)
       throws InvalidDataException, UnsupportedTagException, IOException {
-    Mp3File mp3File = new Mp3File(context.getResourceFile());
-    String duration = String.format("%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60);
-    SongMetadata.SongMetadataBuilder builder = SongMetadata.builder().resourceId(context.getResourceId()).length(duration);
-    ID3v1 tag = mp3File.hasId3v1Tag() ? mp3File.getId3v1Tag() : mp3File.getId3v2Tag();
+    final Mp3File mp3File = new Mp3File(context.getResourceFile());
+    final String duration = String.format("%1d:%2d", mp3File.getLengthInSeconds() / 60, mp3File.getLengthInSeconds() % 60);
+    final SaveSongDTO.SaveSongDTOBuilder saveSongDTOBuilder = SaveSongDTO.builder().resourceId(context.getResourceId()).length(duration);
+    final ID3v1 tag = mp3File.hasId3v1Tag() ? mp3File.getId3v1Tag() : mp3File.getId3v2Tag();
     if (tag != null) {
-      builder
+      saveSongDTOBuilder
           .name(tag.getTitle())
           .artist(tag.getArtist())
           .album(tag.getAlbum())
           .year(Integer.parseInt(tag.getYear()));
     }
-    return context.withSongMetadata(builder.build());
+    return context.withSaveSongDTO(saveSongDTOBuilder.build());
   }
 }
