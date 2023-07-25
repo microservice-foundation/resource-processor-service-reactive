@@ -6,8 +6,9 @@ import com.epam.training.microservicefoundation.resourceprocessor.configuration.
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -44,12 +45,19 @@ public class ClientConfiguration {
   }
 
   @Bean
-  public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties) {
-    return new ResourceServiceClient(webClient, retryProperties);
+  public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
+      ReactiveCircuitBreaker reactiveCircuitBreaker) {
+    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
   }
 
   @Bean
-  public SongServiceClient songServiceClient(WebClient webClient, RetryProperties retryProperties) {
-    return new SongServiceClient(webClient, retryProperties);
+  public SongServiceClient songServiceClient(WebClient webClient, RetryProperties retryProperties,
+      ReactiveCircuitBreaker reactiveCircuitBreaker) {
+    return new SongServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
+  }
+
+  @Bean
+  public ReactiveCircuitBreaker circuitBreaker(ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return circuitBreakerFactory.create("default");
   }
 }

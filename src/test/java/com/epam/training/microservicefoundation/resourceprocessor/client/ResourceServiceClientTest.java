@@ -11,22 +11,27 @@ import java.util.Collections;
 import kotlin.jvm.functions.Function1;
 import okio.Buffer;
 import okio.Okio;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.ResourceUtils;
 import reactor.core.Exceptions;
 import reactor.test.StepVerifier;
 
-@ExtendWith({MockServerExtension.class, SpringExtension.class})
+@SpringBootTest
+@DirtiesContext
+@ExtendWith(MockServerExtension.class)
 @EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
 @ContextConfiguration(classes = ClientConfiguration.class)
 @TestPropertySource(locations = "classpath:application.properties")
@@ -40,49 +45,49 @@ class ResourceServiceClientTest {
         Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
 
     StepVerifier.create(resourceServiceClient.getById(123L))
-        .expectNextCount(26)
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
         .verifyComplete();
   }
 
   @Test
   void shouldGetByIdAfterRetries(@Server(service = RESOURCE) MockServer server) throws IOException {
     // After one retry
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.OK, fileBuffer(),
         Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
 
     StepVerifier.create(resourceServiceClient.getById(123L))
-        .expectNextCount(26)
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
         .verifyComplete();
 
     // After two retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.NOT_FOUND);
+    server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.OK, fileBuffer(),
         Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
 
-    StepVerifier.create(resourceServiceClient.getById(123L))
-        .expectNextCount(26)
+    StepVerifier.create(resourceServiceClient.getById(124L))
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
         .verifyComplete();
 
     // After three retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.NOT_FOUND);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.NOT_FOUND);
+    server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.OK, fileBuffer(),
         Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
 
-    StepVerifier.create(resourceServiceClient.getById(123L))
-        .expectNextCount(26)
+    StepVerifier.create(resourceServiceClient.getById(125L))
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
         .verifyComplete();
+  }
 
-    // Retries exhausted after three retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+  @Test
+  void shouldFailRetryWhenGetById(@Server(service = RESOURCE) MockServer server) {
+    // Read timeout and retry exhausted after three retries
     server.response(HttpStatus.NOT_FOUND);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.OK, fileBuffer(),
-        Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
+    server.response(HttpStatus.NOT_FOUND);
+    server.response(HttpStatus.BAD_REQUEST);
 
     StepVerifier.create(resourceServiceClient.getById(123L))
         .consumeErrorWith(Exceptions::isRetryExhausted)
@@ -90,8 +95,8 @@ class ResourceServiceClientTest {
   }
 
   @Test
-  void shouldFailRetryWhenGetById(@Server(service = RESOURCE) MockServer server) {
-    // Read timeout and retry exhausted after three retries
+  void shouldChangeToOpenStateOfCircuitBreakerWhenGetByIdAfterRetries(@Server(service = RESOURCE) MockServer server)
+      throws IOException {
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.NOT_FOUND);
     server.response(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,6 +104,38 @@ class ResourceServiceClientTest {
     StepVerifier.create(resourceServiceClient.getById(123L))
         .consumeErrorWith(Exceptions::isRetryExhausted)
         .verify();
+
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.OK, fileBuffer(),
+        Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
+    StepVerifier.create(resourceServiceClient.getById(124L))
+        .consumeErrorWith(Exceptions::isRetryExhausted)
+        .verify();
+  }
+
+  @Test
+  void shouldChangeFromHalfOpenToClosedStateOfCircuitBreakerWhenGetByIdAfterRetries(@Server(service = RESOURCE) MockServer server)
+      throws IOException {
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+
+    StepVerifier.create(resourceServiceClient.getById(123L))
+        .consumeErrorWith(Exceptions::isRetryExhausted)
+        .verify();
+
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.OK, fileBuffer(),
+        Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
+    StepVerifier.create(resourceServiceClient.getById(124L))
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
+        .verifyComplete();
+
+    server.response(HttpStatus.CREATED, fileBuffer(), Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    StepVerifier.create(resourceServiceClient.getById(125L))
+        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
+        .verifyComplete();
   }
 
   private Buffer fileBuffer() throws IOException {

@@ -12,18 +12,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ExtendWith({MockServerExtension.class, SpringExtension.class})
+@SpringBootTest
+@DirtiesContext
+@ExtendWith(MockServerExtension.class)
 @EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
 @ContextConfiguration(classes = ClientConfiguration.class)
 @TestPropertySource(locations = "classpath:application.properties")
@@ -47,7 +50,7 @@ class SongServiceClientTest {
   @Test
   void shouldPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
     // After one retry
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.NOT_FOUND);
     server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
     Mono<GetSongDTO> post1 = songServiceClient.post(saveSongDTO);
 
@@ -56,7 +59,7 @@ class SongServiceClientTest {
         .verifyComplete();
 
     // After two retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.BAD_REQUEST);
     server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
     Mono<GetSongDTO> post2 = songServiceClient.post(saveSongDTO);
@@ -66,38 +69,66 @@ class SongServiceClientTest {
         .verifyComplete();
 
     // After three retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.NOT_FOUND);
     server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.NOT_FOUND);
     server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
     Mono<GetSongDTO> post3 = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post3)
         .assertNext(result -> assertEquals(getSongDTO, result))
         .verifyComplete();
-
-    // Retries exhausted after three retries
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    Mono<GetSongDTO> post4 = songServiceClient.post(saveSongDTO);
-
-    StepVerifier.create(post4)
-        .consumeErrorWith(Exceptions::isRetryExhausted)
-        .verify();
   }
 
   @Test
   void shouldFailRetryWhenPostSongMetadata(@Server(service = SONG) MockServer server) {
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.BAD_REQUEST);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.BAD_REQUEST);
+    server.response(HttpStatus.BAD_REQUEST);
     Mono<GetSongDTO> post = songServiceClient.post(saveSongDTO);
 
     StepVerifier.create(post)
         .consumeErrorWith(Exceptions::isRetryExhausted)
         .verify();
+  }
+
+  @Test
+  void shouldChangeToOpenStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+
+    StepVerifier.create(songServiceClient.post(saveSongDTO))
+        .consumeErrorWith(Exceptions::isRetryExhausted)
+        .verify();
+
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    StepVerifier.create(songServiceClient.post(saveSongDTO))
+        .consumeErrorWith(Exceptions::isRetryExhausted)
+        .verify();
+  }
+
+  @Test
+  void shouldChangeFromHalfOpenToClosedStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+    server.response(HttpStatus.SERVICE_UNAVAILABLE);
+
+    StepVerifier.create(songServiceClient.post(saveSongDTO))
+        .consumeErrorWith(Exceptions::isRetryExhausted)
+        .verify();
+
+    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    StepVerifier.create(songServiceClient.post(saveSongDTO))
+        .expectNext(getSongDTO)
+        .verifyComplete();
+
+    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+    StepVerifier.create(songServiceClient.post(saveSongDTO))
+        .expectNext(getSongDTO)
+        .verifyComplete();
   }
 }

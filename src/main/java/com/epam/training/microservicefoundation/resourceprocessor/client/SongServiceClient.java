@@ -5,6 +5,7 @@ import com.epam.training.microservicefoundation.resourceprocessor.model.dto.Save
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,10 +17,12 @@ public class SongServiceClient {
   private static final String SONGS = "/songs";
   private final WebClient webClient;
   private final RetryProperties retryProperties;
+  private final ReactiveCircuitBreaker reactiveCircuitBreaker;
 
-  public SongServiceClient(WebClient webClient, RetryProperties retryProperties) {
+  public SongServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker) {
     this.webClient = webClient;
     this.retryProperties = retryProperties;
+    this.reactiveCircuitBreaker = reactiveCircuitBreaker;
   }
 
   public Mono<GetSongDTO> post(SaveSongDTO saveSongDTO) {
@@ -29,6 +32,7 @@ public class SongServiceClient {
         .bodyValue(saveSongDTO)
         .retrieve()
         .bodyToMono(GetSongDTO.class)
+        .transform(reactiveCircuitBreaker::run)
         .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
         .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
