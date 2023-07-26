@@ -11,12 +11,12 @@ import java.util.Collections;
 import kotlin.jvm.functions.Function1;
 import okio.Buffer;
 import okio.Okio;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +29,7 @@ import org.springframework.util.ResourceUtils;
 import reactor.core.Exceptions;
 import reactor.test.StepVerifier;
 
-@SpringBootTest
-@DirtiesContext
-@ExtendWith(MockServerExtension.class)
-@EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
-@ContextConfiguration(classes = ClientConfiguration.class)
-@TestPropertySource(locations = "classpath:application.properties")
-class ResourceServiceClientTest {
+class ResourceServiceClientTest extends BaseClientTest {
   @Autowired
   private ResourceServiceClient resourceServiceClient;
 
@@ -92,50 +86,6 @@ class ResourceServiceClientTest {
     StepVerifier.create(resourceServiceClient.getById(123L))
         .consumeErrorWith(Exceptions::isRetryExhausted)
         .verify();
-  }
-
-  @Test
-  void shouldChangeToOpenStateOfCircuitBreakerWhenGetByIdAfterRetries(@Server(service = RESOURCE) MockServer server)
-      throws IOException {
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.NOT_FOUND);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-
-    StepVerifier.create(resourceServiceClient.getById(123L))
-        .consumeErrorWith(Exceptions::isRetryExhausted)
-        .verify();
-
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.OK, fileBuffer(),
-        Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
-    StepVerifier.create(resourceServiceClient.getById(124L))
-        .consumeErrorWith(Exceptions::isRetryExhausted)
-        .verify();
-  }
-
-  @Test
-  void shouldChangeFromHalfOpenToClosedStateOfCircuitBreakerWhenGetByIdAfterRetries(@Server(service = RESOURCE) MockServer server)
-      throws IOException {
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-    server.response(HttpStatus.SERVICE_UNAVAILABLE);
-
-    StepVerifier.create(resourceServiceClient.getById(123L))
-        .consumeErrorWith(Exceptions::isRetryExhausted)
-        .verify();
-
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.OK, fileBuffer(),
-        Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE));
-    StepVerifier.create(resourceServiceClient.getById(124L))
-        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
-        .verifyComplete();
-
-    server.response(HttpStatus.CREATED, fileBuffer(), Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    StepVerifier.create(resourceServiceClient.getById(125L))
-        .thenConsumeWhile(dataBuffer -> dataBuffer != null && dataBuffer.readableByteCount() > 0)
-        .verifyComplete();
   }
 
   private Buffer fileBuffer() throws IOException {

@@ -41,18 +41,13 @@ public class ClientConfiguration {
 
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveCircuitBreaker reactiveCircuitBreaker) {
-    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
   }
 
   @Bean
   public SongServiceClient songServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveCircuitBreaker reactiveCircuitBreaker) {
-    return new SongServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
-  }
-
-  @Bean
-  public ReactiveCircuitBreaker circuitBreaker(ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
-    return circuitBreakerFactory.create("default");
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return new SongServiceClient(webClient, retryProperties, circuitBreakerFactory.create("song-service"));
   }
 }

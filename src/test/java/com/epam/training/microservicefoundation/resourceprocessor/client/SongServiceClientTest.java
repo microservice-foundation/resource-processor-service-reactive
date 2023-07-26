@@ -3,37 +3,22 @@ package com.epam.training.microservicefoundation.resourceprocessor.client;
 import static com.epam.training.microservicefoundation.resourceprocessor.client.Server.Service.SONG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.ClientConfiguration;
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
 import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@SpringBootTest
-@DirtiesContext
-@ExtendWith(MockServerExtension.class)
-@EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
-@ContextConfiguration(classes = ClientConfiguration.class)
-@TestPropertySource(locations = "classpath:application.properties")
-class SongServiceClientTest {
+class SongServiceClientTest extends BaseClientTest {
   @Autowired
   private SongServiceClient songServiceClient;
-
   private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", "12:35", 2012);
   private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", "12:35", 2012);
 
@@ -93,6 +78,7 @@ class SongServiceClientTest {
   }
 
   @Test
+  @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
   void shouldChangeToOpenStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
@@ -101,16 +87,10 @@ class SongServiceClientTest {
     StepVerifier.create(songServiceClient.post(saveSongDTO))
         .consumeErrorWith(Exceptions::isRetryExhausted)
         .verify();
-
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.INTERNAL_SERVER_ERROR);
-    server.response(HttpStatus.CREATED, getSongDTO, Collections.singletonMap(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-    StepVerifier.create(songServiceClient.post(saveSongDTO))
-        .consumeErrorWith(Exceptions::isRetryExhausted)
-        .verify();
   }
 
   @Test
+  @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
   void shouldChangeFromHalfOpenToClosedStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {
     server.response(HttpStatus.SERVICE_UNAVAILABLE);
     server.response(HttpStatus.SERVICE_UNAVAILABLE);

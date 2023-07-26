@@ -6,9 +6,10 @@ import com.epam.training.microservicefoundation.resourceprocessor.configuration.
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -17,9 +18,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RefreshScope
@@ -46,18 +44,13 @@ public class ClientConfiguration {
 
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveCircuitBreaker reactiveCircuitBreaker) {
-    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
   }
 
   @Bean
   public SongServiceClient songServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveCircuitBreaker reactiveCircuitBreaker) {
-    return new SongServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
-  }
-
-  @Bean
-  public ReactiveCircuitBreaker circuitBreaker(ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
-    return circuitBreakerFactory.create("default");
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return new SongServiceClient(webClient, retryProperties, circuitBreakerFactory.create("song-service"));
   }
 }
