@@ -1,11 +1,12 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.RetryProperties;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongMetadata;
-import com.epam.training.microservicefoundation.resourceprocessor.model.SongRecord;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
+import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,22 +17,23 @@ public class SongServiceClient {
   private static final String SONGS = "/songs";
   private final WebClient webClient;
   private final RetryProperties retryProperties;
+  private final ReactiveCircuitBreaker reactiveCircuitBreaker;
 
-  public SongServiceClient(WebClient webClient, RetryProperties retryProperties) {
+  public SongServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker) {
     this.webClient = webClient;
     this.retryProperties = retryProperties;
+    this.reactiveCircuitBreaker = reactiveCircuitBreaker;
   }
 
-  public Mono<SongRecord> post(SongMetadata songMetadata) {
-    log.info("Sending a post request with song metadata '{}' to song service", songMetadata);
+  public Mono<GetSongDTO> post(SaveSongDTO saveSongDTO) {
+    log.info("Sending a post request with song metadata '{}' to song service", saveSongDTO);
     return webClient.post().uri(uriBuilder -> uriBuilder.path(SONGS).build())
         .accept(MediaType.APPLICATION_JSON)
-        .bodyValue(songMetadata)
+        .bodyValue(saveSongDTO)
         .retrieve()
-        .bodyToMono(SongRecord.class)
-        .retryWhen(Retry.backoff(retryProperties.getMaxRetries(),
-            Duration.ofSeconds(retryProperties.getInterval())));
-
+        .bodyToMono(GetSongDTO.class)
+        .transform(reactiveCircuitBreaker::run)
+        .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
+        .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
-
 }
