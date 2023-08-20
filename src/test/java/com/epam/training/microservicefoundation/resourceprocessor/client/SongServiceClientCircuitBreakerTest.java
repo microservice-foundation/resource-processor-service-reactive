@@ -16,8 +16,8 @@ import reactor.test.StepVerifier;
 class SongServiceClientCircuitBreakerTest extends BaseClientTest {
   @Autowired
   private SongServiceClient songServiceClient;
-  private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", "12:35", 2012);
-  private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", "12:35", 2012);
+  private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", 10, 2012);
+  private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", 10, 2012);
 
   @Test
   void shouldChangeToOpenStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {

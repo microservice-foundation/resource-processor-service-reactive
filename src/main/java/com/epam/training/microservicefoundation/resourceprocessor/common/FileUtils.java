@@ -1,13 +1,11 @@
 package com.epam.training.microservicefoundation.resourceprocessor.common;
 
 import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +16,18 @@ import reactor.core.publisher.Mono;
 
 public final class FileUtils {
   private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-  private static final String TARGET_DIRECTORY = "src/main/resources";
-  private static final String TEMP_DIRECTORY = "temp";
+  private static final String RESOURCE_DIRECTORY = "src/main/resources";
+  private static final Path TEMP_DIRECTORY_PATH = Path.of(RESOURCE_DIRECTORY, "temp");
 
-  private FileUtils() {
-  }
+  private FileUtils() { }
 
-  public static Mono<File> writeDataBuffer(Flux<DataBuffer> dataBuffer, ResourceType resourceType) {
-    log.info("Writing data buffer to '{}'", TARGET_DIRECTORY + File.separator +  TEMP_DIRECTORY);
-    Path tempDirectoryPath = Paths.get(TARGET_DIRECTORY, TEMP_DIRECTORY);
-    if (!Files.exists(tempDirectoryPath)) {
-      createTempDirectory(tempDirectoryPath);
+  public static Mono<Path> writeDataBuffer(Flux<DataBuffer> dataBuffer, ResourceType resourceType) {
+    log.info("Writing data buffer to '{}'", TEMP_DIRECTORY_PATH);
+    if (!Files.exists(TEMP_DIRECTORY_PATH)) {
+      createTempDirectory(TEMP_DIRECTORY_PATH);
     }
-    Path filePath = tempDirectoryPath.resolve(System.currentTimeMillis() + resourceType.getExtension());
-    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).thenReturn(filePath.toFile());
+    final Path filePath = TEMP_DIRECTORY_PATH.resolve(System.currentTimeMillis() + resourceType.getExtension());
+    return DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).thenReturn(filePath);
   }
 
   private static void createTempDirectory(Path path) {
@@ -44,15 +40,15 @@ public final class FileUtils {
     }
   }
 
-  public static Mono<Void> delete(File file) {
-    log.info("Deleting file '{}'", file);
+  public static Mono<Void> delete(Path filePath) {
+    log.info("Deleting file '{}'", filePath);
     try {
-      return Mono.just(Files.deleteIfExists(file.toPath())).then();
+      return Mono.just(Files.deleteIfExists(filePath)).then();
     } catch (NoSuchFileException exception) {
-      log.error("File '{}' does not exit", file.toPath(), exception);
+      log.error("File '{}' does not exit", filePath, exception);
       return Mono.error(exception);
     } catch (DirectoryNotEmptyException exception) {
-      log.error("Directory '{}' is not empty ", file.toPath(), exception);
+      log.error("Directory '{}' is not empty ", filePath, exception);
       return Mono.error(exception);
     } catch (IOException exception) {
       log.error("File permission might be caught by user", exception);

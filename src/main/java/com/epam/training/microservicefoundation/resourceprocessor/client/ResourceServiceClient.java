@@ -29,10 +29,10 @@ public class ResourceServiceClient {
     log.info("Getting resource file by resource id '{}' from resource service", id);
     return webClient.get().uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
         .accept(MediaType.APPLICATION_OCTET_STREAM)
-        .retrieve().bodyToFlux(DataBuffer.class)
+        .retrieve()
+        .bodyToFlux(DataBuffer.class)
         .transform(reactiveCircuitBreaker::run)
         .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
             .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
-
 }

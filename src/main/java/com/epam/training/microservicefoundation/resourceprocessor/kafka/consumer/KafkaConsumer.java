@@ -57,7 +57,7 @@ public class KafkaConsumer {
   }
 
   private <T> Mono<T> sendToDeadLockQueue(ReceiverRecordException exception) {
-    log.info("Exception occurred: {}, sending event '{}' to dead lock queue", exception, exception.getRecord());
+    log.error("Exception occurred: {}, sending event '{}' to dead lock queue", exception, exception.getRecord());
     deadLetterPublishingRecoverer.accept(exception.getRecord(), exception);
     acknowledge(exception.getRecord());
     return Mono.empty();

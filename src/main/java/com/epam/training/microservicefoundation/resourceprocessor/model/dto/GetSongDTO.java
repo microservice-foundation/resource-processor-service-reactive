@@ -15,6 +15,6 @@ public class GetSongDTO implements Serializable {
   private String name;
   private String artist;
   private String album;
-  private String length;
+  private long lengthInSeconds;
   private int year;
 }

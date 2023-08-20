@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -45,7 +46,8 @@ public class ClientConfiguration {
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
       ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
-    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
+    ReactiveCircuitBreaker reactiveCircuitBreaker = circuitBreakerFactory.create("resource-service");
+    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
   }
 
   @Bean
