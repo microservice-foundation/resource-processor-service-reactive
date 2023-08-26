@@ -22,10 +22,8 @@
                         <pattern>
                             {
                             "trace": {
-                            "trace_id": "%mdc{X-B3-TraceId}",
-                            "span_id": "%mdc{X-B3-SpanId}",
-                            "parent_span_id": "%mdc{X-B3-ParentSpanId}",
-                            "exportable": "%mdc{X-Span-Export}"
+                            "trace_id": "%mdc{traceId:-}",
+                            "span_id": "%mdc{spanId:-}"
                             }
                             }
                         </pattern>
@@ -51,6 +49,14 @@
                 </providers>
             </encoder>
         </appender>
+
+<!--        <logger level="INFO" name="org.springframework.kafka" additivity="false">-->
+<!--            <appender-ref ref="flatConsoleAppender"/>-->
+<!--        </logger>-->
+
+<!--        <logger level="INFO" name="org.apache.kafka" additivity="false">-->
+<!--            <appender-ref ref="flatConsoleAppender"/>-->
+<!--        </logger>-->
 
         <root level="INFO">
             <appender-ref ref="jsonConsoleAppender"/>
