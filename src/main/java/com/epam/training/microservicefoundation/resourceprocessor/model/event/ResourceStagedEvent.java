@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ResourceStagedEvent implements Serializable {
     private static final long serialVersionUID = 10_11_2022_11_13L;
     private long id;
+    private String traceId;
 }
