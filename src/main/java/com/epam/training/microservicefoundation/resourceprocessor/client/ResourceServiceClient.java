@@ -1,5 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.client;
 
+import io.micrometer.observation.ObservationRegistry;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +19,24 @@ public class ResourceServiceClient {
   private final WebClient webClient;
   private final RetryProperties retryProperties;
   private final ReactiveCircuitBreaker reactiveCircuitBreaker;
+  private final ObservationRegistry registry;
 
-  public ResourceServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker) {
+  public ResourceServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker,
+      ObservationRegistry registry) {
     this.webClient = webClient;
     this.retryProperties = retryProperties;
     this.reactiveCircuitBreaker = reactiveCircuitBreaker;
+    this.registry = registry;
   }
 
   public Flux<DataBuffer> getById(long id) {
-    log.info("Getting resource file by resource id '{}' from resource service", id);
-    return webClient.get().uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
-        .accept(MediaType.APPLICATION_OCTET_STREAM)
-        .retrieve()
-        .bodyToFlux(DataBuffer.class)
-        .transform(reactiveCircuitBreaker::run)
-        .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
-            .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
+      log.info("Getting resource file by resource id '{}' from resource service", id);
+      return webClient.get().uri(uriBuilder -> uriBuilder.path(RESOURCES).path(ID).build(id))
+          .accept(MediaType.APPLICATION_OCTET_STREAM)
+          .retrieve()
+          .bodyToFlux(DataBuffer.class)
+          .transform(reactiveCircuitBreaker::run)
+          .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
+              .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
 }

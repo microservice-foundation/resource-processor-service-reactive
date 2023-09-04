@@ -4,6 +4,7 @@ import com.epam.training.microservicefoundation.resourceprocessor.common.Pair;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.TopicProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
 import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceProcessedEvent;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,8 +29,8 @@ public class KafkaConfiguration {
 
   @Bean
   public KafkaProducer kafkaProducer(ReactiveKafkaProducerTemplate<String, Object> kafkaProducerTemplate,
-      Map<Class<?>, Pair<String, Function<Object, ProducerRecord<String, Object>>>> publicationTopics) {
-    return new KafkaProducer(kafkaProducerTemplate, publicationTopics);
+      Map<Class<?>, Pair<String, Function<Object, ProducerRecord<String, Object>>>> publicationTopics, ObservationRegistry registry) {
+    return new KafkaProducer(kafkaProducerTemplate, publicationTopics, registry);
   }
 
   @Bean

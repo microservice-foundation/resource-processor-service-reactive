@@ -3,6 +3,7 @@ package com.epam.training.microservicefoundation.resourceprocessor.configuration
 import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
+import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -11,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -41,8 +41,8 @@ public class ClientConfiguration {
 
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
-    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory, ObservationRegistry registry) {
+    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"), registry);
   }
 
   @Bean

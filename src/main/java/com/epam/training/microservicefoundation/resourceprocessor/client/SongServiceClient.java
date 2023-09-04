@@ -34,6 +34,6 @@ public class SongServiceClient {
         .bodyToMono(GetSongDTO.class)
         .transform(reactiveCircuitBreaker::run)
         .retryWhen(Retry.backoff(retryProperties.getMaxAttempts(), Duration.ofMillis(retryProperties.getInitialInterval()))
-        .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
+            .doBeforeRetry(retrySignal -> log.info("Retrying request: attempt {}", retrySignal.totalRetriesInARow())));
   }
 }
