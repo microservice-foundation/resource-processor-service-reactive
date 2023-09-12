@@ -1,8 +1,9 @@
 package com.epam.training.microservicefoundation.resourceprocessor.configuration;
 
-import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.ResourceServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
+import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -10,6 +11,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -34,8 +36,9 @@ public class ClientConfiguration {
   }
 
   @Bean
-  public WebClient webClient(ReactorLoadBalancerExchangeFilterFunction loadBalancerExchangeFilterFunction, WebClientProperties properties) {
-    return WebClient.builder()
+  public WebClient webClient(WebClient.Builder webClientBuilder,
+      ReactorLoadBalancerExchangeFilterFunction loadBalancerExchangeFilterFunction, WebClientProperties properties) {
+    return webClientBuilder
         .baseUrl(properties.getBaseUrl())
         .filter(loadBalancerExchangeFilterFunction)
         .clientConnector(new ReactorClientHttpConnector(httpClient(properties)))
@@ -45,7 +48,8 @@ public class ClientConfiguration {
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
       ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
-    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
+    ReactiveCircuitBreaker reactiveCircuitBreaker = circuitBreakerFactory.create("resource-service");
+    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
   }
 
   @Bean

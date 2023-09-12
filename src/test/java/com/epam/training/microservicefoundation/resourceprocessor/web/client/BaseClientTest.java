@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.ClientConfiguration;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
@@ -9,11 +9,9 @@ import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest
-@DirtiesContext
-@ExtendWith(MockServerExtension.class)
-@EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
+@ExtendWith({SpringExtension.class, MockServerExtension.class})
 @ContextConfiguration(classes = ClientConfiguration.class)
 @TestPropertySource(locations = "classpath:application.properties")
 public abstract class BaseClientTest {

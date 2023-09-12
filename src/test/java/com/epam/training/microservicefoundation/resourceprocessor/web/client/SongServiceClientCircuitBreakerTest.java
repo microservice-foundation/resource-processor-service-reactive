@@ -1,9 +1,9 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
-import static com.epam.training.microservicefoundation.resourceprocessor.client.Server.Service.SONG;
+import static com.epam.training.microservicefoundation.resourceprocessor.web.client.Server.Service.SONG;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.SaveSongDTO;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,8 @@ import reactor.test.StepVerifier;
 class SongServiceClientCircuitBreakerTest extends BaseClientTest {
   @Autowired
   private SongServiceClient songServiceClient;
-  private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", "12:35", 2012);
-  private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", "12:35", 2012);
+  private final GetSongDTO getSongDTO = new GetSongDTO(1L, 123L, "Sound", "Sounds", "Sato", 10, 2012);
+  private final SaveSongDTO saveSongDTO = new SaveSongDTO(123L, "Sound", "Sounds", "Sato", 10, 2012);
 
   @Test
   void shouldChangeToOpenStateOfCircuitBreakerWhenPostSongMetadataAfterRetries(@Server(service = SONG) MockServer server) {

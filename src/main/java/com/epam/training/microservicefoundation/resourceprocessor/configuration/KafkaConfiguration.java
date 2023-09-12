@@ -4,9 +4,10 @@ import com.epam.training.microservicefoundation.resourceprocessor.common.Pair;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.TopicProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.consumer.KafkaConsumer;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceStagedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.event.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceProcessorService;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceStagedEventListener;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,15 +38,16 @@ public class KafkaConfiguration {
 
   @Bean
   public KafkaProducer kafkaProducer(ReactiveKafkaProducerTemplate<String, Object> kafkaProducerTemplate,
-      Map<Class<?>, Pair<String, Function<Object, ProducerRecord<String, Object>>>> publicationTopics) {
-    return new KafkaProducer(kafkaProducerTemplate, publicationTopics);
+      Map<Class<?>, Pair<String, Function<Object, ProducerRecord<String, Object>>>> publicationTopics, ObservationRegistry registry) {
+    return new KafkaProducer(kafkaProducerTemplate, publicationTopics, registry);
   }
 
   @Bean
   public KafkaConsumer kafkaConsumer(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer, RetryProperties retryProperties,
-      KafkaProperties kafkaProperties, TopicProperties topicProperties, ResourceProcessorService resourceProcessorService) {
+      KafkaProperties kafkaProperties, TopicProperties topicProperties, ResourceProcessorService resourceProcessorService,
+      ObservationRegistry registry) {
     return new KafkaConsumer(deadLetterPublishingRecoverer, retryProperties, Pair.of(resourceStagedEventConsumer(kafkaProperties,
-        topicProperties), new ResourceStagedEventListener(resourceProcessorService)));
+        topicProperties), new ResourceStagedEventListener(resourceProcessorService)), registry);
   }
 
   private ReactiveKafkaConsumerTemplate<String, ResourceStagedEvent> resourceStagedEventConsumer(KafkaProperties kafkaProperties,

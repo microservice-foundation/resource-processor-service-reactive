@@ -1,6 +1,6 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
-import static com.epam.training.microservicefoundation.resourceprocessor.client.Server.Service.RESOURCE;
+import static com.epam.training.microservicefoundation.resourceprocessor.web.client.Server.Service.RESOURCE;
 
 import java.io.File;
 import java.io.IOException;

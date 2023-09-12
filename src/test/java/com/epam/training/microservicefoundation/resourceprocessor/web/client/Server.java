@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
