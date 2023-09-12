@@ -1,9 +1,7 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
-import static com.epam.training.microservicefoundation.resourceprocessor.client.Server.Service.RESOURCE;
+import static com.epam.training.microservicefoundation.resourceprocessor.web.client.Server.Service.RESOURCE;
 
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.ClientConfiguration;
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,19 +10,10 @@ import kotlin.jvm.functions.Function1;
 import okio.Buffer;
 import okio.Okio;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
-import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.ResourceUtils;
 import reactor.core.Exceptions;
 import reactor.test.StepVerifier;

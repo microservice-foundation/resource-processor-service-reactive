@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Duration;
@@ -19,14 +19,11 @@ public class ResourceServiceClient {
   private final WebClient webClient;
   private final RetryProperties retryProperties;
   private final ReactiveCircuitBreaker reactiveCircuitBreaker;
-  private final ObservationRegistry registry;
 
-  public ResourceServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker,
-      ObservationRegistry registry) {
+  public ResourceServiceClient(WebClient webClient, RetryProperties retryProperties, ReactiveCircuitBreaker reactiveCircuitBreaker) {
     this.webClient = webClient;
     this.retryProperties = retryProperties;
     this.reactiveCircuitBreaker = reactiveCircuitBreaker;
-    this.registry = registry;
   }
 
   public Flux<DataBuffer> getById(long id) {

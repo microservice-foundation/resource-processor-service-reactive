@@ -1,8 +1,10 @@
 package com.epam.training.microservicefoundation.resourceprocessor.configuration;
 
-import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.ResourceServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
+import io.github.resilience4j.circuitbreaker.internal.InMemoryCircuitBreakerRegistry;
+import io.github.resilience4j.timelimiter.internal.InMemoryTimeLimiterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -14,12 +16,14 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
 import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 @TestConfiguration
 @EnableConfigurationProperties({WebClientProperties.class, RetryProperties.class})
+@Import(value = {ReactiveResilience4JCircuitBreakerFactory.class, InMemoryCircuitBreakerRegistry.class, InMemoryTimeLimiterRegistry.class})
 public class ClientConfiguration {
 
   private HttpClient httpClient(WebClientProperties properties) {
@@ -41,8 +45,8 @@ public class ClientConfiguration {
 
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory, ObservationRegistry registry) {
-    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"), registry);
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
+    return new ResourceServiceClient(webClient, retryProperties, circuitBreakerFactory.create("resource-service"));
   }
 
   @Bean

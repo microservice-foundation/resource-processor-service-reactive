@@ -1,6 +1,6 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.client.Server.Service;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.Server.Service;
 import java.io.IOException;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;

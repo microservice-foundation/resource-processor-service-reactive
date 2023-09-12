@@ -1,13 +1,13 @@
 package com.epam.training.microservicefoundation.resourceprocessor.service.implementation;
 
-import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.ResourceServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.common.FileUtils;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.context.ResourceProcessingContext;
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
-import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceProcessedEvent;
-import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceStagedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.context.ResourceProcessingContext;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.SaveSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.event.ResourceProcessedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.event.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.Convertor;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.InvalidDataException;

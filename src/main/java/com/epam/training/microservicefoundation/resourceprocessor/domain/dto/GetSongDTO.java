@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model.dto;
+package com.epam.training.microservicefoundation.resourceprocessor.domain.dto;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

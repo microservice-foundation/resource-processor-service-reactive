@@ -5,18 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.epam.training.microservicefoundation.resourceprocessor.common.KafkaExtension;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.KafkaConfiguration;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.TopicConfiguration;
-import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.TopicProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceProcessedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.event.ResourceProcessedEvent;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.config.client.RetryProperties;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -26,8 +23,7 @@ import reactor.kafka.sender.SenderResult;
 import reactor.test.StepVerifier;
 
 @ExtendWith(value = {SpringExtension.class, KafkaExtension.class})
-@EnableConfigurationProperties(value = {TopicProperties.class, KafkaProperties.class, RetryProperties.class})
-@ContextConfiguration(classes = { KafkaConfiguration.class, TopicConfiguration.class})
+@ContextConfiguration(classes = {KafkaConfiguration.class, TopicConfiguration.class})
 @TestPropertySource(locations = "classpath:application.properties")
 class KafkaProducerTest {
   @Autowired

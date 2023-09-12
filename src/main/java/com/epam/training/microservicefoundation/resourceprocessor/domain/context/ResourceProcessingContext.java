@@ -1,8 +1,7 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model.context;
+package com.epam.training.microservicefoundation.resourceprocessor.domain.context;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
-import java.io.File;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.SaveSongDTO;
 import java.nio.file.Path;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

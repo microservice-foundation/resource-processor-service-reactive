@@ -1,7 +1,7 @@
-package com.epam.training.microservicefoundation.resourceprocessor.client;
+package com.epam.training.microservicefoundation.resourceprocessor.web.client;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.GetSongDTO;
-import com.epam.training.microservicefoundation.resourceprocessor.model.dto.SaveSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.GetSongDTO;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.dto.SaveSongDTO;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

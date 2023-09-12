@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model.event;
+package com.epam.training.microservicefoundation.resourceprocessor.domain.event;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

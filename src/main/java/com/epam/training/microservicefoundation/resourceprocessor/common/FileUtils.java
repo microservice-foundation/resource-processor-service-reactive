@@ -1,6 +1,6 @@
 package com.epam.training.microservicefoundation.resourceprocessor.common;
 
-import com.epam.training.microservicefoundation.resourceprocessor.model.ResourceType;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.ResourceType;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;

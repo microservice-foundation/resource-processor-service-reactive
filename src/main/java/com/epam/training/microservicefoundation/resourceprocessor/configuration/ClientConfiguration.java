@@ -1,7 +1,7 @@
 package com.epam.training.microservicefoundation.resourceprocessor.configuration;
 
-import com.epam.training.microservicefoundation.resourceprocessor.client.ResourceServiceClient;
-import com.epam.training.microservicefoundation.resourceprocessor.client.SongServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.ResourceServiceClient;
+import com.epam.training.microservicefoundation.resourceprocessor.web.client.SongServiceClient;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.WebClientProperties;
 import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
@@ -47,9 +47,9 @@ public class ClientConfiguration {
 
   @Bean
   public ResourceServiceClient resourceServiceClient(WebClient webClient, RetryProperties retryProperties,
-      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory, ObservationRegistry registry) {
+      ReactiveResilience4JCircuitBreakerFactory circuitBreakerFactory) {
     ReactiveCircuitBreaker reactiveCircuitBreaker = circuitBreakerFactory.create("resource-service");
-    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker, registry);
+    return new ResourceServiceClient(webClient, retryProperties, reactiveCircuitBreaker);
   }
 
   @Bean

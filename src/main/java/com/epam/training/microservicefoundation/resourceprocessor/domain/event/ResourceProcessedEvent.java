@@ -1,4 +1,4 @@
-package com.epam.training.microservicefoundation.resourceprocessor.model.event;
+package com.epam.training.microservicefoundation.resourceprocessor.domain.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

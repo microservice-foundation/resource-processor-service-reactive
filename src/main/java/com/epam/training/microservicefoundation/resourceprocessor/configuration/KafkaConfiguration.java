@@ -4,7 +4,7 @@ import com.epam.training.microservicefoundation.resourceprocessor.common.Pair;
 import com.epam.training.microservicefoundation.resourceprocessor.configuration.properties.TopicProperties;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.consumer.KafkaConsumer;
 import com.epam.training.microservicefoundation.resourceprocessor.kafka.producer.KafkaProducer;
-import com.epam.training.microservicefoundation.resourceprocessor.model.event.ResourceStagedEvent;
+import com.epam.training.microservicefoundation.resourceprocessor.domain.event.ResourceStagedEvent;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceProcessorService;
 import com.epam.training.microservicefoundation.resourceprocessor.service.implementation.ResourceStagedEventListener;
 import io.micrometer.observation.ObservationRegistry;
